@@ -13,7 +13,7 @@ app.use(express.json());
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
 const connectToMongoDB = async () => {
-    mongoose.connect(process.env.DB_URL, clientOptions)
+    await mongoose.connect(process.env.DB_URL, clientOptions)
     .then(() => {
       console.log('database connection established');
     })
