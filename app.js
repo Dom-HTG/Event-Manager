@@ -13,7 +13,7 @@ const {
     PatchEvent, 
     UpdateEvent, 
     DeleteEvent 
-} = require("./controllers")
+} = require("./controllers/user.controllers")
 
 const app = express();
 
