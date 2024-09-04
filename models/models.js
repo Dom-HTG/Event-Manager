@@ -13,7 +13,6 @@ const User = mongoose.model('User', {
     email: {
         type: String,
         required: true,
-        undefined: true
     },
     password: {
         type: String,
@@ -45,3 +44,6 @@ const Events = mongoose.model('Events', {
         type: Boolean
     }
 })
+
+module.exports = User;
+module.exports = Events;
