@@ -6,16 +6,21 @@ const auth = require('./controllers/auth.controllers');
 
 const app = express();
 
+// Middlwares.
 app.use(express.json());
 
+//Initialize database connection.
+const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
+
 const connectToMongoDB = async () => {
-    mongoose.connect(process.env.DB_URL)
+    mongoose.connect(process.env.DB_URL, clientOptions)
     .then(() => {
       console.log('database connection established');
     })
     .catch((error) => {
       console.error('Error connecting to MongoDB:', error);
-    });
+    })
+    .finally(await mongoose.disconnect());
   
 }
 
