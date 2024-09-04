@@ -1,5 +1,4 @@
 const express = require('express');
-const app = express();
 //Handlers for Users.
 
 const GetUsers = (req, res) => {
