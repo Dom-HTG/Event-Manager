@@ -6,7 +6,11 @@ mongoose.connect(process.env.DB_URL, {
 })
 
 const User = mongoose.model('User', {
-    name: {
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
         type: String,
         required: true
     },
@@ -45,5 +49,7 @@ const Events = mongoose.model('Events', {
     }
 })
 
-module.exports = User;
-module.exports = Events;
+module.exports = {
+    User,
+    Events
+};

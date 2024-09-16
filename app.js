@@ -1,8 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv').config();
-const mongoose = require('mongoose');
 const controllers = require('./controllers/user.controllers');
 const auth = require('./controllers/auth.controllers');
+const db = require('./utils/db.utils');
 
 const app = express();
 
@@ -10,30 +10,14 @@ const app = express();
 app.use(express.json());
 
 //Initialize database connection.
-const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
-
-const connectToMongoDB = async () => {
-    await mongoose.connect(process.env.DB_URL, clientOptions)
-    .then(() => {
-      console.log('database connection established');
-    })
-    .catch((error) => {
-      console.error('Error connecting to MongoDB:', error);
-    })
-    .finally(await mongoose.disconnect());
-  
-}
-
-connectToMongoDB();
-
+db.connectToMongoDB();
 
 // Auth routes.
-app.post('/auth/login',) // Login user.
-app.post('/auth/register')
+app.post('/auth/login', auth.Login) // Login user.
+app.post('/auth/register', auth.Register) // Register user.
 
 
-// User routee.
-
+// User routes.
 app.get("/users", controllers.GetUsers) // Get all users.
 app.post("/users", controllers.CreateUser) // Create a new user.
 app.get("/users/:id", controllers.GetUserById) // gets a user by id.
