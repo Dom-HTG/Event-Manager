@@ -1,74 +1,83 @@
-const express = require('express');
-//Handlers for Users.
+const UserModel = require('../models/User.models');
 
-const GetUsers = (req, res) => {
+const GetUsers = async (req, res) => {
     //This function gets all the users.
-    res.status(200).send({"msg": "GET USERS"})
+
+   await UserModel.find({}, (err, users) => {
+        if (err) {
+            console.log(err);
+            return res.status(404).json({msg: "error retrieving users", err: err});
+        } else if (!user) {
+            return res.status(404).json({msg: "empty users"});
+        } else {
+            return res.status(200).json({msg: "success", payload: users});
+        }
+    });
 };
 
-const CreateUser = (req, res) => {
+const CreateUser = async (req, res) => {
     //This function creates a new user.
-    res.status(201).send({"msg": "CREATE NEW USERS"})
+
+    try {
+       const user = req.body;
+       await user.save();
+       return res.status(201).json(user);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({err: "Error creating user"});
+    };    
 };
 
-const GetUserById = (req, res) => {
+const GetUserById = async (req, res) => {
     //This function gets a user by Id.
-    res.status(200).send({"msg": "GET USER BY ID"})
+
+    const userId = req.params.userId;
+
+    await UserModel.findById(userId, (err, user) => {
+        if (err) {
+            console.log(err);
+            return res.status(404).json({msg: "error retrieving user", payload: user});
+        } else if (!user) {
+            return res.status(404).json({msg: "user not found"});
+        };
+    });
 };
 
-const PatchUser = (req, res) => {
-    //This function updates only portion of user data.
-    res.status(200).send({"msg": "PATCH USERS"})
+// const PatchUser = (req, res) => {
+//     //This function updates only portion of user data.
+//     res.status(200).send({"msg": "PATCH USERS"})
 
-};
+// };
 
-const UpdateUser = (req, res) => {
+const UpdateUser = async (req, res) => {
     //This function updates all of the user data.
-    res.status(200).send({"msg": "UPDATE USERS"})
+
+    const userId = req.params.id;
+
+    await UserModel.findByIdAndUpdate(userId, (err, user) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({msg: "error updating user", err: err});
+        } else {
+            return res.status(200).json({msg: "user updated", payload: user});
+        }
+    });
 
 };
 
-const DeleteUser = (req, res) => {
+const DeleteUser = async (req, res) => {
     //This function deletes user from the database.
-    res.status(200).send({"msg": "DELETE USERS"})
 
-};
+    const userId = req.params.userId;
 
-//Handlers for Events.
-
-const GetEvents = (req, res) => {
-    //This function gets all the registered events.
-    res.status(200).send({"msg": "GET EVENTS"})
-
-};
-
-const CreateEvent = (req, res) => {
-    //This function creates a new event.
-    res.status(201).send({"msg": "CREATE NEW USER"})
-
-};
-
-const GetEventById = (req, res) => {
-    //This functions gets an event by Id. 
-    res.status(200).send({"msg": "GET EVENT BY ID"})
-
-};
-
-const PatchEvent = (req, res) => {
-    //This functions updates only portion of event data. 
-    res.status(200).send({"msg": "PATCH EVENT"})
-
-};
-
-const UpdateEvent = (req, res) => {
-    //This function updates event.
-    res.status(200).send({"msg": "UPDATE EVENT"})
-
-};
-
-const DeleteEvent = (req, res) => {
-    //This function deletes event from the database.
-    res.status(200).send({"msg": "DELETE EVENT"})
+    await UserModel.findByIdAndDelete(userId, (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({msg: "error deleting user", err: err});
+        } else {
+            return res.status(200).json({msg: "user deleted"});
+        };
+    });
 
 };
 
@@ -76,14 +85,8 @@ module.exports = {
     GetUsers, 
     CreateUser, 
     GetUserById, 
-    PatchUser, 
+    // PatchUser, 
     UpdateUser, 
     DeleteUser, 
-    GetEvents,
-    CreateEvent, 
-    GetEventById, 
-    PatchEvent, 
-    UpdateEvent, 
-    DeleteEvent 
 };
 

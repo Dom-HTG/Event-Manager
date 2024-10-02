@@ -26,10 +26,9 @@ app.put("/users/:id", controllers.UpdateUser) // Update a user.
 app.delete("/users/:id", controllers.DeleteUser) // Delete a user.
 
 // Events routes.
-
 app.get("/events", controllers.GetEvents) // Get all events.
-app.post("/events", controllers.CreateEvent) // Create a new event.
 app.get("/events/:id", controllers.GetEventById) // Get an event by id.
+app.post("/events", controllers.CreateEvent) // Create a new event.
 app.patch("/events/:id", controllers.PatchEvent) // Patch an event.
 app.put("/events/:id", controllers.UpdateEvent) // Update an event.
 app.delete("/events/:id", controllers.DeleteEvent) // Delete an event.

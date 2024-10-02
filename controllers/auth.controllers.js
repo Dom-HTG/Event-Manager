@@ -1,7 +1,7 @@
 const express = require('express');
-const model = require('../models/models');
-const bcrypt  = require('bcrypt');
 const mongoose = require('mongoose');
+const UserModel = require("../models/User.models").default;
+const jwtAuth = require('../auth/auth');
 
 const Login = async (req, res) => {
     const { email, password } = req.body;
@@ -12,23 +12,27 @@ const Login = async (req, res) => {
         };
 
         //Login logic.
-        registeredUser = await model.User.findOne({ email });
+        // registeredUser = await model.User.findOne({ email });
+        const registeredUser = await UserModel.findOne({ email });
 
         if (!registeredUser) {
             return res.status(404).send({ message: 'User not registered.' });
         };
 
-        const hashedPass = registeredUser.password
-        const match = bcrypt.compare(password, hashedPass)
+        const hashedPass = registeredUser.password;
+        const match = bcrypt.compare(password, hashedPass);
 
-        if (!match) {
-            res.status(404).send({ message: 'Password mismatch.' });
-        } else {
-            res.status(200).send({ message: 'Login successful.' });
-        }
+        if (match) {
+            //Create new JWT token.
+            const token = await jwtAuth.createToken(email);
+            res.status(200).send({ 
+                message: 'Login successful.', 
+                tkn: token
+             });
+        } 
     } catch (err) {
         res.status(500).send({ message: 'Error logging in' });
-    }
+    };
    
 
 };
@@ -43,25 +47,40 @@ const Register = async (req, res) => {
         };
 
         //check if user is already registered.
-        registeredUser = await model.User.findOne({email});
+        // registeredUser = await model.User.findOne({email});
+        const registeredUser = await UserModel.findOne({ email });
         if (registeredUser) {
             return res.status(400).send({ msg: 'User already exists' });
         }
 
         //Hash the user password.
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // const hashPassword = await bcrypt.hash(password, salt);
 
         //register user.
-        const newUser = new model.User ({
+        // const newUser = new model.User ({
+        //     firstName,
+        //     lastName,
+        //     email,
+        //     // password: hashPassword
+        //     password
+        // });
+        const newUser = new UserModel ({
             firstName,
             lastName,
             email,
-            password: hashPassword
+            password
         });
 
-        await newUser.save();
-        res.status(201).send({ msg: 'User registered successfully' });
+        const savedUser = await newUser.save();
+        console.log('Saved user to the database', savedUser);
+
+        //Create new jwt token.
+        const token = await jwtAuth.createToken(savedUser._id, savedUser.email);
+        res.status(201).send({
+            msg: 'User registered successfully', 
+            tkn: token
+        });
 
     } catch (err) {
         res.status(500).json({ 
