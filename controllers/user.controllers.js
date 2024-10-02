@@ -19,7 +19,7 @@ const CreateUser = async (req, res) => {
     //This function creates a new user.
 
     try {
-       const user = req.body;
+       const user = new UserModel(req.body);
        await user.save();
        return res.status(201).json(user);
     } catch (err) {

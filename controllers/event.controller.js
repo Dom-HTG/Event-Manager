@@ -36,7 +36,7 @@ const CreateEvent = async (req, res) => {
     //This function creates a new event.
 
     try {
-        const event = req.body;
+        const event = new EventModel(req.body);
         await event.save();  
         return res.status(201).json({msg: "event created", payload: event});      
     } catch (err) {
@@ -52,7 +52,7 @@ const CreateEvent = async (req, res) => {
 const UpdateEvent = async (req, res) => {
     //This function updates event.
 
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     
     await EventModel.findByIdAndUpdate(eventId, (err, event) => {
         if (err) {
@@ -67,7 +67,7 @@ const UpdateEvent = async (req, res) => {
 const DeleteEvent = async (req, res) => {
     //This function deletes event from the database.
 
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
 
     await EventModel.findByIdAndDelete(eventId, (err)=> {
         if (err) {
