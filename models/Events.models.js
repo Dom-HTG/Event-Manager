@@ -20,7 +20,7 @@ const eventSchema = mongoose.Schema({
     owner: {
         type: String
     },
-    publicity: {
+    public: {
         type: Boolean,
         default: true
     }
