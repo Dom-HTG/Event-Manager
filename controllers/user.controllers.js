@@ -1,4 +1,5 @@
 const UserModel = require('../models/User.models');
+const { customError } = require('../errors/errror'); 
 
 const GetUsers = async (req, res) => {
     //This function gets all the users.
@@ -6,11 +7,13 @@ const GetUsers = async (req, res) => {
     try {
         const users = await UserModel.find({});
         if (users.length === 0) {
-            throw new Error('No users found');
-        }
+            throw new customError('No users found', 404);
+        };
+
         return res.status(200).json({payload: users});
+
     } catch (error) {
-        return res.status(error.status).json({err: error.message})
+        return res.status(error.statusCode).json({err: error.message})
     }
 };
 
@@ -20,14 +23,16 @@ const CreateUser = async (req, res) => {
     try {
         const body = req.body;
         if (!body) {
-            throw new Error('No data provided');
+            throw new customError('No data provided', 400);
         }
        const user = new UserModel(body);
        await user.save();
-       return res.status(201).json({payload: user});
-    } catch (err) {
-        console.log(err);
-        return res.status(err.status).json({err: err.message});
+
+       return res.status(201).json({msg: "User created successfully", payload: user});
+
+    } catch (error) {
+        console.log(error);
+        return res.status(error.statusCode).json({err: error.message});
     };    
 };
 
@@ -39,12 +44,14 @@ const GetUserById = async (req, res) => {
         const user = await UserModel.findById(userId);
 
         if (!user) {
-            throw new Error('User not found');
-        }
-        return res.status(200).json({payload: user});
+            throw new customError ('User not found', 404);
+        };
+
+        return res.status(200).json({msg: "User retrieved successfully", payload: user});
+
     } catch (error) {
         console.error(error);
-        return res.status(err.status).json({err: error.message})
+        return res.status(error.statusCode).json({err: error.message})
     }
 
 };
@@ -62,18 +69,20 @@ const UpdateUser = async (req, res) => {
         const userId = req.params.userId;
         const updateData = req.body;
         if (!updateData) {
-            throw new Error('Invalid input');
+            throw new customError ('Invalid input', 400);
         }
 
         const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, { new: true });
 
         if (!updatedUser) {
-            throw new Error('Updated Use not found');
-        }
-        return res.status(200).json({payload: updatedUser});
+            throw new customError ('Updated Use not found', 404);
+        };
+
+        return res.status(200).json({msg: "User updated successfully", payload: updatedUser});
+
     } catch (error) {
         console.error(error);
-        return res.status(error.status).json({err: error.message});
+        return res.status(error.statusCode).json({err: error.message});
     }
 };
 
@@ -83,12 +92,14 @@ const DeleteUser = async (req, res) => {
     try {
         const userId = req.params.userId;
         const deletedUser = await UserModel.findByIdAndDelete(userId);
+
         if (deletedUser) {
-            return res.status(200).send({deletedUser: deletedUser});
+            return res.status(200).json({msg: "User deleted Successfully", payload: deletedUser});
         };
+
     } catch (error) {
         console.error(error);
-        return res.status(500).json({error: error.message, msg: "Error deleting user"});
+        return res.status(error.statusCode).json({error: error.message || "Error deleting user"});
     };
 };
 
