@@ -1,37 +1,40 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const UserModel = require("../models/User.models").default;
+require('mongoose');
+const UserModel = require('../models/User.models');
 const jwtAuth = require('../auth/auth');
+const { customError } = require('../errors/errror'); 
 
 const Login = async (req, res) => {
     const { email, password } = req.body;
     try {
         //Validate user input.
         if (!email || !password) {
-        return res.status(400).send({ message: 'All fields are required.'});
+            throw new customError('All fields are required', 400);
         };
 
         //Login logic.
         // registeredUser = await model.User.findOne({ email });
-        const registeredUser = await UserModel.findOne({ email });
+        const registeredUser = await UserModel.findOne({ email: email });
 
         if (!registeredUser) {
-            return res.status(404).send({ message: 'User not registered.' });
+            throw new customError('User not found', 404);
         };
 
+        //Compare passwords.
         const hashedPass = registeredUser.password;
         const match = bcrypt.compare(password, hashedPass);
 
         if (match) {
             //Create new JWT token.
-            const token = await jwtAuth.createToken(email);
-            res.status(200).send({ 
-                message: 'Login successful.', 
+            const token = jwtAuth.createToken(email);
+            return res.status(200).send({ 
+                msg: 'Login successful.', 
                 tkn: token
              });
         } 
-    } catch (err) {
-        res.status(500).send({ message: 'Error logging in' });
+    } catch (error) {
+        console.error(error);
+        return res.status(error.statusCode).json({ msg: error.message });
     };
    
 
@@ -43,15 +46,16 @@ const Register = async (req, res) => {
 
         //validate input from user.
         if (!firstName || !lastName || !email || !password) {
-            return res.status(400).send({ msg: 'All fields are required.' });
+            throw new customError('All fields are required', 400);
         };
 
         //check if user is already registered.
         // registeredUser = await model.User.findOne({email});
-        const registeredUser = await UserModel.findOne({ email });
+        const registeredUser = await UserModel.findOne({ email: email });
+
         if (registeredUser) {
-            return res.status(400).send({ msg: 'User already exists' });
-        }
+            throw new customError('User already registered', 400);
+        };
 
         //Hash the user password.
         // const salt = await bcrypt.genSalt(10);
@@ -65,6 +69,7 @@ const Register = async (req, res) => {
         //     // password: hashPassword
         //     password
         // });
+
         const newUser = new UserModel ({
             firstName,
             lastName,
@@ -73,20 +78,19 @@ const Register = async (req, res) => {
         });
 
         const savedUser = await newUser.save();
-        console.log('Saved user to the database', savedUser);
+        console.log('Saved user to the database');
 
-        //Create new jwt token.
-        const token = await jwtAuth.createToken(savedUser._id, savedUser.email);
-        res.status(201).send({
+        //Create new JWT.
+        const token = jwtAuth.createToken(savedUser._id, savedUser.email);
+        return res.status(201).send({
             msg: 'User registered successfully', 
-            tkn: token
+            user: savedUser,
+            authToken: token
         });
 
-    } catch (err) {
-        res.status(500).json({ 
-            msg: "Error registering user.", 
-            error: err
-        });
+    } catch (error) {
+        console.error(error);
+        return res.status(error.statusCode).json({ msg: error.message });
     };
 };
 

@@ -1,8 +1,12 @@
 const express = require('express');
-const dotenv = require('dotenv').config();
-const controllers = require('./controllers/user.controllers');
-const auth = require('./controllers/auth.controllers');
-const db = require('./utils/db.utils');
+require('dotenv').config();
+// const userController = require('./controllers/user.controllers');
+// const eventController = require('./controllers/event.controller')
+// // const auth = require('./controllers/auth.controllers');
+const connectToMongo = require('./utils/db.utils');
+const authRoutes = require("./routes/auth.routes");
+const userRoutes = require('./routes/user.routes');
+const eventRoutes = require('./routes/event.routes');
 
 const app = express();
 
@@ -10,28 +14,30 @@ const app = express();
 app.use(express.json());
 
 //Initialize database connection.
-db.connectToMongoDB();
+connectToMongo();
 
 // Auth routes.
-app.post('/auth/login', auth.Login) // Login user.
-app.post('/auth/register', auth.Register) // Register user.
-
+// app.post('/auth/login', auth.Login) // Login user.
+// app.post('/auth/register', auth.Register) // Register user.
+app.use("/auth", authRoutes)
+app.use("/api/users", userRoutes);
+app.use("/api/events", eventRoutes);
 
 // User routes.
-app.get("/users", controllers.GetUsers) // Get all users.
-app.post("/users", controllers.CreateUser) // Create a new user.
-app.get("/users/:userId", controllers.GetUserById) // gets a user by id.
-app.patch("/users/:userId", controllers.PatchUser) // patch a user.
-app.put("/users/:userId", controllers.UpdateUser) // Update a user.
-app.delete("/users/:userId", controllers.DeleteUser) // Delete a user.
+// app.get("api/users", userController.GetUsers) // Get all users.
+// app.post("api/users", userController.CreateUser) // Create a new user.
+// app.get("api/users/:userId", userController.GetUserById) // gets a user by id.
+// // app.patch("api/users/:userId", controllers.PatchUser) // patch a user.
+// app.put("api/users/:userId", userController.UpdateUser) // Update a user.
+// app.delete("api/users/:userId", userController.DeleteUser) // Delete a user.
 
 // Events routes.
-app.get("/events", controllers.GetEvents) // Get all events.
-app.get("/events/:eventId", controllers.GetEventById) // Get an event by id.
-app.post("/events", controllers.CreateEvent) // Create a new event.
-app.patch("/events/:eventId", controllers.PatchEvent) // Patch an event.
-app.put("/events/:eventId", controllers.UpdateEvent) // Update an event.
-app.delete("/events/:eventId", controllers.DeleteEvent) // Delete an event.
+// app.get("api/events", eventController.GetEvents) // Get all events.
+// app.get("api/events/:eventId", eventController.GetEventById) // Get an event by id.
+// app.post("api/events", eventController.CreateEvent) // Create a new event.
+// // app.patch("api/events/:eventId", controllers.PatchEvent) // Patch an event.
+// app.put("api/events/:eventId", eventController.UpdateEvent) // Update an event.
+// app.delete("api/events/:eventId", eventController.DeleteEvent) // Delete an event.
 
 
 app.listen(process.env.PORT || 3000, () => {console.log(`listening on port: ${process.env.PORT}`)})

@@ -1,47 +1,72 @@
 const EventModel = require('../models/Events.models');
-require('mongoose');
+const { customError } = require('../errors/errror');
 
-const GetEvents = (req, res) => {
+const GetEvents = async (req, res) => {
     //This function gets all the registered events.
-    EventModel.find({}, (err, events) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({err: "error retrieving events"});
-        } else {
-            res.status(200).json(events);
+    //  EventModel.find({}, (err, events) => {
+    //     if (err) {
+    //         console.log(err);
+    //         return res.status(500).json({err: "error retrieving events"});
+    //     } else {
+    //         res.status(200).json(events);
+    //     }
+    // });
+
+    try {
+        
+        const events = await EventModel.find({});
+        if(events.length === 0) {
+            throw new customError('No events found', 404);
         }
-    });
+
+        return res.status(200).json({payload: events});
+
+    } catch (error) {
+        return res.status(error.statusCode).json({ msg: error.message });
+    }
+
+
 
 };
 
 const GetEventById = async (req, res) => {
     //This functions gets an event by Id. 
 
-    const eventId = req.params.eventId;
+    try {
+        const eventId = req.params.eventId;
+        const event = await EventModel.findById(eventId);
 
-    await EventModel.findById(eventId, (err, event) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({err: "error retrieving event"});
-        } else if (!event) {
-            return res.status(404).json({msg: "event not found"});
-        } else {
-            return res.status(200).json(event);
-        }
-    });
+        if (!event) {
+            throw new customError('Event not found', 400);
+        };
 
+        return res.status(200).json({ payload: event });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(error.statusCode).json({ msg: error.message  });
+    };
 };
 
 const CreateEvent = async (req, res) => {
     //This function creates a new event.
 
     try {
-        const event = new EventModel(req.body);
-        await event.save();  
-        return res.status(201).json({msg: "event created", payload: event});      
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({err: "error creating event"});
+        const body = req.body;
+
+        if (!body) {
+            throw new customError('No input provided', 400);
+        };
+
+        const newEvent = new EventModel(body);
+        const savedEvent = await newEvent.save();  
+
+        if (savedEvent) {
+            return res.status(201).json({ msg: "event created", payload: savedEvent });      
+        };
+    } catch (error) {
+        console.log(error);
+        return res.status(error.statusCode).json({ msg: error.message });
     };
 };
 
@@ -52,32 +77,40 @@ const CreateEvent = async (req, res) => {
 const UpdateEvent = async (req, res) => {
     //This function updates event.
 
-    const eventId = req.params.eventId;
-    
-    await EventModel.findByIdAndUpdate(eventId, (err, event) => {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({err: "error updating event"});
+    try {
+        const eventId = req.params.eventId;
+        const updateData = req.body;
+
+        const updatedEvent = await EventModel.findByIdAndUpdate(eventId, updateData, { new: true });
+
+        if (updatedEvent) {
+            return res.status(200).json({payload: updatedEvent});
+
         } else {
-            return res.status(200).json({msg: "event updated"});
+            throw new customError('Event not updated', 400);
         }
-    });
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(error.statusCode).json({ msg: error.message });
+    };
 };
 
 const DeleteEvent = async (req, res) => {
     //This function deletes event from the database.
+    try {
+        const eventId = req.params.eventId;
 
-    const eventId = req.params.eventId;
-
-    await EventModel.findByIdAndDelete(eventId, (err)=> {
-        if (err) {
-            console.log(err);
-            return res.status(500).json({msg: "error deleting event"});
-        } else {
-            return res.status(200).json({msg: "event deleted"});
+        const deletedEvent = await EventModel.findByIdAndDelete(eventId, { new: true });
+        if (deletedEvent) {
+            return res.status(200).json({payload: deletedEvent});
         };
-    });
-
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(error.statusCode).json({ msg: error.message });
+    };
 };
 
 module.exports = {

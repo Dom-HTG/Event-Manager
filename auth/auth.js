@@ -9,7 +9,7 @@ const createToken = (userID, email) => {
 };
 
 //verify the token.
-const verifyToken = async (token) => {
+const verifyToken = (token) => {
    try {
     const payload = jwt.verify(token, jwtSecret);
     return payload;
