@@ -1,5 +1,6 @@
 const express = require('express');
 require('mongoose');
+const bcrypt = require('bcryptjs');
 const UserModel = require('../models/User.models');
 const jwtAuth = require('../auth/auth');
 const { customError } = require('../errors/errror'); 
@@ -84,7 +85,11 @@ const Register = async (req, res) => {
         const token = jwtAuth.createToken(savedUser._id, savedUser.email);
         return res.status(201).send({
             msg: 'User registered successfully', 
-            user: savedUser,
+            user: {
+                firstName: savedUser.firstName,
+                lastName: savedUser.lastName,
+                email: savedUser.email
+            },
             authToken: token
         });
 
