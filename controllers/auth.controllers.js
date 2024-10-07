@@ -35,7 +35,11 @@ const Login = async (req, res) => {
         } 
     } catch (error) {
         console.error(error);
-        return res.status(error.statusCode).json({ msg: error.message });
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({ err: message });
     };
    
 
@@ -95,7 +99,11 @@ const Register = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(error.statusCode).json({ msg: error.message });
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({ err: message });
     };
 };
 

@@ -13,7 +13,12 @@ const GetUsers = async (req, res) => {
         return res.status(200).json({payload: users});
 
     } catch (error) {
-        return res.status(error.statusCode).json({err: error.message})
+        console.error(error);
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({err: message})
     }
 };
 
@@ -32,7 +37,11 @@ const CreateUser = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(error.statusCode).json({err: error.message});
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({err: message});
     };    
 };
 
@@ -51,7 +60,11 @@ const GetUserById = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(error.statusCode).json({err: error.message})
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({err: message});
     }
 
 };
@@ -82,7 +95,11 @@ const UpdateUser = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(error.statusCode).json({err: error.message});
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
+
+        return res.status(statusCode).json({err: message});
     }
 };
 
@@ -99,7 +116,11 @@ const DeleteUser = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(error.statusCode).json({error: error.message || "Error deleting user"});
+
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Error deleting user";
+
+        return res.status(statusCode).json({err: message});
     };
 };
 
