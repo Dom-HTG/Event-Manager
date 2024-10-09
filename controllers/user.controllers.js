@@ -1,7 +1,7 @@
 const UserModel = require('../models/User.models');
 const { customError } = require('../errors/errror'); 
 
-const GetUsers = async (req, res) => {
+const GetUsers = async (req, res, next) => {
     //This function gets all the users.
 
     try {
@@ -13,16 +13,18 @@ const GetUsers = async (req, res) => {
         return res.status(200).json({payload: users});
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({err: message})
+        // return res.status(statusCode).json({err: message})
+
+        next(error);
     }
 };
 
-const CreateUser = async (req, res) => {
+const CreateUser = async (req, res, next) => {
     //This function creates a new user.
 
     try {
@@ -36,16 +38,18 @@ const CreateUser = async (req, res) => {
        return res.status(201).json({msg: "User created successfully", payload: user});
 
     } catch (error) {
-        console.log(error);
+        // console.log(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({err: message});
+        // return res.status(statusCode).json({err: message});
+
+        next(error);
     };    
 };
 
-const GetUserById = async (req, res) => {
+const GetUserById = async (req, res, next) => {
     //This function gets a user by Id.
 
     try {
@@ -59,12 +63,14 @@ const GetUserById = async (req, res) => {
         return res.status(200).json({msg: "User retrieved successfully", payload: user});
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({err: message});
+        // return res.status(statusCode).json({err: message});
+
+        next(error);
     }
 
 };
@@ -75,7 +81,7 @@ const GetUserById = async (req, res) => {
 
 // };
 
-const UpdateUser = async (req, res) => {
+const UpdateUser = async (req, res, next) => {
     //This function updates all of the user data.
 
     try {
@@ -94,16 +100,18 @@ const UpdateUser = async (req, res) => {
         return res.status(200).json({msg: "User updated successfully", payload: updatedUser});
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({err: message});
+        // return res.status(statusCode).json({err: message});
+
+        next(error);
     }
 };
 
-const DeleteUser = async (req, res) => {
+const DeleteUser = async (req, res, next) => {
     //This function deletes user from the database.
 
     try {
@@ -115,12 +123,14 @@ const DeleteUser = async (req, res) => {
         };
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Error deleting user";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Error deleting user";
 
-        return res.status(statusCode).json({err: message});
+        // return res.status(statusCode).json({err: message});
+
+        next(error);
     };
 };
 

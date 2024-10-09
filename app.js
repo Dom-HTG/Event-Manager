@@ -7,6 +7,7 @@ const connectToMongo = require('./utils/db.utils');
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require('./routes/user.routes');
 const eventRoutes = require('./routes/event.routes');
+const { errorHandler } = require('./middlewares/error.middlewares')
 
 const app = express();
 
@@ -38,6 +39,8 @@ app.use("/api/events", eventRoutes);
 // // app.patch("api/events/:eventId", controllers.PatchEvent) // Patch an event.
 // app.put("api/events/:eventId", eventController.UpdateEvent) // Update an event.
 // app.delete("api/events/:eventId", eventController.DeleteEvent) // Delete an event.
+
+app.use(errorHandler);
 
 
 app.listen(process.env.PORT || 3000, () => {console.log(`listening on port: ${process.env.PORT}`)})

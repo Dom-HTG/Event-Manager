@@ -1,7 +1,7 @@
 const EventModel = require('../models/Events.models');
 const { customError } = require('../errors/errror');
 
-const GetEvents = async (req, res) => {
+const GetEvents = async (req, res, next) => {
     //This function gets all the registered events.
     //  EventModel.find({}, (err, events) => {
     //     if (err) {
@@ -22,16 +22,18 @@ const GetEvents = async (req, res) => {
         return res.status(200).json({payload: events});
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     }
 };
 
-const GetEventById = async (req, res) => {
+const GetEventById = async (req, res, next) => {
     //This functions gets an event by Id. 
 
     try {
@@ -45,16 +47,18 @@ const GetEventById = async (req, res) => {
         return res.status(200).json({ payload: event });
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     };
 };
 
-const CreateEvent = async (req, res) => {
+const CreateEvent = async (req, res, next) => {
     //This function creates a new event.
 
     try {
@@ -71,12 +75,14 @@ const CreateEvent = async (req, res) => {
             return res.status(201).json({ msg: "event created", payload: savedEvent });      
         };
     } catch (error) {
-        console.log(error);
+        // console.log(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     };
 };
 
@@ -84,7 +90,7 @@ const CreateEvent = async (req, res) => {
 //     //This functions updates only segment of event data. 
 // };
 
-const UpdateEvent = async (req, res) => {
+const UpdateEvent = async (req, res, next) => {
     //This function updates event.
 
     try {
@@ -102,16 +108,18 @@ const UpdateEvent = async (req, res) => {
 
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     };
 };
 
-const DeleteEvent = async (req, res) => {
+const DeleteEvent = async (req, res, next) => {
     //This function deletes event from the database.
     try {
         const eventId = req.params.eventId;
@@ -122,12 +130,7 @@ const DeleteEvent = async (req, res) => {
         };
         
     } catch (error) {
-        console.error(error);
-
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
-
-        return res.status(statusCode).json({ msg: message });
+        next(error);
     };
 };
 

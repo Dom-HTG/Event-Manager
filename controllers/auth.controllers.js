@@ -5,7 +5,7 @@ const UserModel = require('../models/User.models');
 const jwtAuth = require('../auth/auth');
 const { customError } = require('../errors/errror'); 
 
-const Login = async (req, res) => {
+const Login = async (req, res, next) => {
     const { email, password } = req.body;
     try {
         //Validate user input.
@@ -34,18 +34,20 @@ const Login = async (req, res) => {
              });
         } 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     };
    
 
 };
 
-const Register = async (req, res) => {
+const Register = async (req, res, next) => {
     try {
         const  { firstName, lastName, email, password } = req.body;
 
@@ -98,12 +100,14 @@ const Register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
+        // console.error(error);
 
-        const statusCode = error.statusCode || 500;
-        const message = error.message || "Internal server error";
+        // const statusCode = error.statusCode || 500;
+        // const message = error.message || "Internal server error";
 
-        return res.status(statusCode).json({ err: message });
+        // return res.status(statusCode).json({ err: message });
+
+        next(error);
     };
 };
 
