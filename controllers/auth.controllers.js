@@ -5,13 +5,13 @@ const UserModel = require('../models/User.models');
 const jwtAuth = require('../auth/auth');
 const { customError } = require('../errors/errror'); 
 
-const Login = async (req, res, next) => {
+const Login = async (req, res) => {
     const { email, password } = req.body;
     try {
         //Validate user input.
-        if (!email || !password) {
-            throw new customError('All fields are required', 400);
-        };
+        // if (!email || !password) {
+        //     throw new customError('All fields are required', 400);
+        // };
 
         //Login logic.
         // registeredUser = await model.User.findOne({ email });
@@ -34,27 +34,40 @@ const Login = async (req, res, next) => {
              });
         } 
     } catch (error) {
-        // console.error(error);
+        console.error(error);
 
-        // const statusCode = error.statusCode || 500;
-        // const message = error.message || "Internal server error";
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
 
-        // return res.status(statusCode).json({ err: message });
+        return res.status(statusCode).json({ err: message });
 
-        next(error);
+        // next(error);
     };
    
 
 };
 
-const Register = async (req, res, next) => {
+
+/**
+ * 
+ * @param {{body: { firstName, lastName}}} req 
+ * @param {*} res 
+ * @returns user
+ * @example
+ * const user = new User();
+ */
+
+// openapi
+const Register = async (req, res) => {
     try {
         const  { firstName, lastName, email, password } = req.body;
 
         //validate input from user.
-        if (!firstName || !lastName || !email || !password) {
-            throw new customError('All fields are required', 400);
-        };
+        // if (!firstName || !lastName || !email || !password) {
+        //     throw new customError('All fields are required', 400); // joi zod yup 
+        // };
+
+        //JSDoc
 
         //check if user is already registered.
         // registeredUser = await model.User.findOne({email});
@@ -100,14 +113,13 @@ const Register = async (req, res, next) => {
         });
 
     } catch (error) {
-        // console.error(error);
+        console.error(error);
 
-        // const statusCode = error.statusCode || 500;
-        // const message = error.message || "Internal server error";
+        const statusCode = error.statusCode || 500;
+        const message = error.message || "Internal server error";
 
-        // return res.status(statusCode).json({ err: message });
+        return res.status(statusCode).json({ err: message });
 
-        next(error);
     };
 };
 
